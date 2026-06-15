@@ -1,19 +1,23 @@
-version: "3.8"
-
 services:
-    backend:
-        build:
-            context: .
-            dockerfile: Dockerfile
-        ports:
-            - "8000:80"
+    db:
+        image: postgres:13
+        healthcheck:
+            test:
+                [
+                    "CMD-SHELL",
+                    "pg_isready -U ${DB_USER:-user} -d ${DB_NAME:-household_db}",
+                ]
+            interval: 5s
+            timeout: 5s
+            retries: 5
+        restart: always
         volumes:
-            - ./backend:/app
-    frontend:
-        build:
-            context: ./frontend
-            dockerfile: Dockerfile # You'll need to create this Dockerfile
+            - postgres_data:/var/lib/postgresql/data/
+        environment:
+            - POSTGRES_USER=${DB_USER:-user}
+            - POSTGRES_PASSWORD=${DB_PASSWORD:-password}
+            - POSTGRES_DB=${DB_NAME:-household_db}
         ports:
-            - "3000:3000"
-        volumes:
-            - ./frontend:/app
+            - "5432:5432"
+volumes:
+    postgres_data:
