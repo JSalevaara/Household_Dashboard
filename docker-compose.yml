@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+    backend:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - "8000:80"
+        volumes:
+            - ./backend:/app
+    frontend:
+        build:
+            context: ./frontend
+            dockerfile: Dockerfile # You'll need to create this Dockerfile
+        ports:
+            - "3000:3000"
+        volumes:
+            - ./frontend:/app
