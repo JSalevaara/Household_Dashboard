@@ -1,22 +1,31 @@
 import os
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+from sqlalchemy.orm import DeclarativeBase
 
-# Load variables from the .env file.
+# Load variables from the .env file
 load_dotenv() 
 
-# Get the database URL from the environment variables.
-SQLALCHEMY_URL = os.getenv("DATABASE_URL") 
+# Get the database URL from the environment variables
+SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL") 
 
-# Create the engine that manages a pool of connections.
-engine = create_engine(SQLALCHEMY_URL)
+# Create the async engine
+engine = create_async_engine(SQLALCHEMY_DATABASE_URL, echo=True)
 
-# Create session factory. 
-# autocommit = False: Must call db.commit() to save changes.
-# autoflush = False: Prevents the session from automatically sending pending data to the database before every query.
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+# Create the async session factory
+AsyncSessionLocal = async_sessionmaker(
+    bind=engine, 
+    class_=AsyncSession, 
+    expire_on_commit=False,
+    autocommit=False,
+    autoflush=False
+)
 
-# Create the Base class. Allows SQLAlchemy to map python classes to database tables.
-Base = declarative_base()
+# Create the Base class using the modern SQLAlchemy 2.0 syntax
+class Base(DeclarativeBase):
+    pass
+
+# Dependency injection for FastAPI routes
+async def get_db():
+    async with AsyncSessionLocal() as session:
+        yield session
