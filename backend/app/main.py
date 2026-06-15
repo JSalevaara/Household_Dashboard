@@ -3,9 +3,9 @@ from fastapi import FastAPI
 app = FastAPI(
     title="household_dashboard",
     description="A household management dashboard app",
-    version=""
+    version="0.1.0"
 )
 
-@app.get("/", status_code=100)
+@app.get("/")
 def test_API():
-    return "Hello World!"
+    return {"message": "Hello world!"}
