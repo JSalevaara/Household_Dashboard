@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from app.routes import users
 
 app = FastAPI(
     title="household_dashboard",
@@ -6,6 +7,4 @@ app = FastAPI(
     version="0.1.0"
 )
 
-@app.get("/")
-def test_API():
-    return {"message": "Hello world!"}
+app.include_router(users)
