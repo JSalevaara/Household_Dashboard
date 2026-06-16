@@ -5,8 +5,6 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-alembic.ini
-
 .vscode
 .idea/
 *.swp
