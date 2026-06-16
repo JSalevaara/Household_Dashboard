@@ -22,7 +22,3 @@ async def create_user(user_in: schemas.UserCreate, db: AsyncSession = Depends(ge
     except Exception as e:
         print(f"CRITICAL DB ERROR during user creation: {e}")
         raise HTTPException(status_code=500, detail="Internal server error during user creation.")
-
-@router.get("/api/users")
-async def test():
-    return {"Test successful xddd"}

@@ -16,7 +16,8 @@ async def get_user_by_email(db: AsyncSession, email: str):
     return result.scalar_one_or_none()
 
 async def create_new_user(db: AsyncSession, user_in: UserCreate):
-    hashed_pw = ph.hash(user_in.password)
+    raw_password = str(user_in.password)
+    hashed_pw = ph.hash(raw_password)
     new_user = User(username=user_in.username, email=user_in.email, hashed_password=hashed_pw)
     db.add(new_user)
     await db.commit()
