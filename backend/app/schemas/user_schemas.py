@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, ConfigDict
 from typing import Optional
 
 # User schemas
@@ -19,3 +19,5 @@ class User(UserBase):
 class UserResponse(BaseModel):
     message: str
     user: User
+
+    model_config=ConfigDict(from_attributes=True)
