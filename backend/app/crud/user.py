@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from app.models import User
-from app.schemas.schemas import UserCreate
+from backend.app.schemas.shopping_item_schemas import UserCreate
 from argon2 import PasswordHasher
 
 ph = PasswordHasher()

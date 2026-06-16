@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
-from app.schemas import schemas
+from app.schemas import user_schemas as schemas
 from app.crud import user as crud_user
 
 router = APIRouter()
@@ -15,3 +15,7 @@ async def create_user(user_in: schemas.UserCreate, db: AsyncSession = Depends(ge
     created_db_user = await crud_user.create_new_user(db, user_in)
 
     return { "message": "A new user created.", "user": created_db_user}
+
+@router.get("/api/users")
+async def test():
+    return {"Test successful xdd"}
