@@ -3,8 +3,7 @@ from typing import List, Optional
 from sqlalchemy import String, Boolean, ForeignKey, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
-from app import Base
-
+from app.core.database import Base
 class Household(Base):
     __tablename__ = "households"
 
