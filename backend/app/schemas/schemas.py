@@ -25,10 +25,6 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str
 
-class UserResponse(BaseModel):
-    message: str
-    user: User
-
 class User(UserBase):
     id: int
     household_id: Optional[int] = None
@@ -36,6 +32,9 @@ class User(UserBase):
     class Config:
         from_attributes = True
 
+class UserResponse(BaseModel):
+    message: str
+    user: User
 
 # Shopping item schemas
 class ShoppingItemBase(BaseModel):
