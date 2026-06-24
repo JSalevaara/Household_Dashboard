@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import apiClient from '../api/client';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 export const Login = () => {
 	const navigate = useNavigate();
@@ -108,6 +108,11 @@ export const Login = () => {
 						className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-colors disabled:bg-blue-400">
 						{isLoading ? 'Signing in...' : 'Log In'}
 					</button>
+					<Link
+						to="/register"
+						className="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-colors">
+						Create an account
+					</Link>
 				</form>
 			</div>
 		</div>

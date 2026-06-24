@@ -9,6 +9,8 @@ import { Register } from './components/register';
 import { Dashboard } from './Dashboard';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { Settings } from './components/settings';
+import { ChangePassword } from './components/changePassword';
+import { AdminDashboard } from './components/adminDashboard';
 
 export default function App() {
 	return (
@@ -31,7 +33,24 @@ export default function App() {
 						<ProtectedRoute>
 							<Settings></Settings>
 						</ProtectedRoute>
-					}></Route>
+					}
+				/>
+				<Route
+					path="/settings/changepassword"
+					element={
+						<ProtectedRoute>
+							<ChangePassword></ChangePassword>
+						</ProtectedRoute>
+					}
+				/>
+				<Route
+					path="/admin"
+					element={
+						<ProtectedRoute>
+							<AdminDashboard />
+						</ProtectedRoute>
+					}
+				/>
 
 				<Route path="*" element={<Navigate to="/dashboard" replace />} />
 			</Routes>

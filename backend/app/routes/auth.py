@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.schemas import user_schemas as schemas
 from app.crud import user as crud_user
-from app.core.security import create_access_token
+from app.core.utils import create_access_token
 from argon2 import PasswordHasher
 
 ph = PasswordHasher()

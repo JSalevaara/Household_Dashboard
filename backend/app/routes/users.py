@@ -1,24 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi.security import OAuth2PasswordBearer
 from app.core.database import get_db
 from app.schemas import user_schemas as schemas
-from app.core.security import decode_access_token
 from app.crud import user as crud_user
 from argon2 import PasswordHasher
+from app.core.security import get_current_user
 
 ph = PasswordHasher()
 router = APIRouter()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/login")
 
-async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)):
-    payload = decode_access_token(token)
-    if not payload or "sub" not in payload:
-        raise HTTPException(status_code=401, detail="Invalid token")
-    user = await crud_user.get_user_by_username(db, username=payload["sub"])
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user
 
 @router.post("/api/users", response_model=schemas.User)
 async def create_user(user_in: schemas.UserCreate, db: AsyncSession = Depends(get_db)):
@@ -54,3 +44,4 @@ async def change_password(
     await db.commit()
     
     return {"message": "Password updated successfully"}
+

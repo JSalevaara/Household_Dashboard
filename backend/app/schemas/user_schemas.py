@@ -30,3 +30,12 @@ class UserChangePassword(BaseModel):
     old_password: str
     new_password: str
     confirm_new_password: str
+
+class UserOut(BaseModel):
+    id: int
+    username: str
+    email: str
+    role: str
+    household_id: Optional[int] = None
+
+    model_config = ConfigDict(from_attributes=True)
