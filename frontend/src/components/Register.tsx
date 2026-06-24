@@ -37,7 +37,7 @@ export const Register = () => {
 		setMessage(null);
 
 		try {
-			const response = await apiClient.post('/users/', formData);
+			const response = await apiClient.post('/users', formData);
 			setMessage({
 				type: 'success',
 				text: `Welcome ${response.data.username}! Your account has been created.`,
