@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 export const Dashboard = () => {
 	const navigate = useNavigate();
@@ -19,6 +19,9 @@ export const Dashboard = () => {
 				className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-6 rounded-lg transition-colors">
 				Log Out
 			</button>
+			<Link to="/settings" className="text-blue-600 hover:underline">
+				Go to settings
+			</Link>
 		</div>
 	);
 };

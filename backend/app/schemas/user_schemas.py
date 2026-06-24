@@ -21,3 +21,12 @@ class UserResponse(BaseModel):
     user: User
 
     model_config=ConfigDict(from_attributes=True)
+
+class UserLogin(BaseModel):
+    username: str
+    password: str
+
+class UserChangePassword(BaseModel):
+    old_password: str
+    new_password: str
+    confirm_new_password: str

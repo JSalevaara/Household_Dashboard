@@ -10,7 +10,7 @@ ph = PasswordHasher()
 router = APIRouter()
 
 @router.post("/api/login")
-async def login(credentials: schemas.UserCreate, db: AsyncSession = Depends(get_db)):
+async def login(credentials: schemas.UserLogin, db: AsyncSession = Depends(get_db)):
     user = await crud_user.get_user_by_username(db, username=credentials.username)
     
     if not user:

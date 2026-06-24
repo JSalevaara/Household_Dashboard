@@ -4,10 +4,11 @@ import {
 	Route,
 	Navigate,
 } from 'react-router-dom';
-import { Login } from './components/login'; // Adjust path if your components are in a folder!
-import { Register } from './components/register'; // Adjust path
+import { Login } from './components/login';
+import { Register } from './components/register';
 import { Dashboard } from './Dashboard';
-import ProtectedRoute from './components/ProtectedRoute';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import { Settings } from './components/settings';
 
 export default function App() {
 	return (
@@ -24,6 +25,13 @@ export default function App() {
 						</ProtectedRoute>
 					}
 				/>
+				<Route
+					path="/settings"
+					element={
+						<ProtectedRoute>
+							<Settings></Settings>
+						</ProtectedRoute>
+					}></Route>
 
 				<Route path="*" element={<Navigate to="/dashboard" replace />} />
 			</Routes>

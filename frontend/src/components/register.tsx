@@ -8,7 +8,10 @@ export const Register = () => {
 		username: '',
 		email: '',
 		password: '',
+		confirmPassword: '',
 	});
+
+	const [showPassword, setShowPassword] = useState(false);
 	const [message, setMessage] = useState<{
 		type: 'success' | 'error';
 		text: string;
@@ -30,8 +33,13 @@ export const Register = () => {
 				type: 'success',
 				text: `Welcome ${response.data.username}! Your account has been created.`,
 			});
-			setFormData({ username: '', email: '', password: '' });
-			navigate('login');
+			setFormData({
+				username: '',
+				email: '',
+				password: '',
+				confirmPassword: '',
+			});
+			setTimeout(() => navigate('login'), 2000);
 		} catch (error: any) {
 			if (error.response) {
 				const detail = error.response.data.detail;
@@ -57,14 +65,16 @@ export const Register = () => {
 		<div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
 			<div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8">
 				<h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
-					Join the Household
+					Create an Account
 				</h2>
+
 				{message && (
 					<div
-						className={`p-4 rounded-lg mb-6 text-sm font-medium ${message.type === 'success' ? 'bg-green-500 text-green-700' : 'bg-red-100 text-red-800'}`}>
+						className={`p-4 rounded-lg mb-6 text-sm font-medium ${message.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
 						{message.text}
 					</div>
 				)}
+
 				<form onSubmit={handleSubmit} className="space-y-6">
 					<div>
 						<label className="block text-sm font-medium text-gray-700 mb-1">
@@ -76,13 +86,13 @@ export const Register = () => {
 							value={formData.username}
 							onChange={handleChange}
 							required
-							className="w-full px-4- py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition-colors"
-							placeholder="JohnDoe"
+							className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-colors"
 						/>
 					</div>
+
 					<div>
 						<label className="block text-sm font-medium text-gray-700 mb-1">
-							Email Address
+							Email
 						</label>
 						<input
 							type="email"
@@ -90,8 +100,7 @@ export const Register = () => {
 							value={formData.email}
 							onChange={handleChange}
 							required
-							className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
-							placeholder="john@example.com"
+							className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-colors"
 						/>
 					</div>
 
@@ -99,22 +108,53 @@ export const Register = () => {
 						<label className="block text-sm font-medium text-gray-700 mb-1">
 							Password
 						</label>
-						<input
-							type="password"
-							name="password"
-							value={formData.password}
-							onChange={handleChange}
-							required
-							minLength={8}
-							className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
-							placeholder="••••••••"
-						/>
+						<div className="relative">
+							<input
+								type={showPassword ? 'text' : 'password'}
+								name="password"
+								value={formData.password}
+								onChange={handleChange}
+								required
+								className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-colors"
+							/>
+
+							<button
+								type="button"
+								onClick={() => setShowPassword(!showPassword)}
+								className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500 hover:text-gray-700 focus:outline-none">
+								{showPassword ? 'Hide' : 'Show'}
+							</button>
+						</div>
 					</div>
+
+					<div>
+						<label className="block text-sm font-medium text-gray-700 mb-1">
+							Confirm Password
+						</label>
+						<div className="relative">
+							<input
+								type={showPassword ? 'text' : 'password'}
+								name="confirmPassword"
+								value={formData.confirmPassword}
+								onChange={handleChange}
+								required
+								className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-colors"
+							/>
+
+							<button
+								type="button"
+								onClick={() => setShowPassword(!showPassword)}
+								className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500 hover:text-gray-700 focus:outline-none">
+								{showPassword ? 'Hide' : 'Show'}
+							</button>
+						</div>
+					</div>
+
 					<button
 						type="submit"
 						disabled={isLoading}
 						className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-colors disabled:bg-blue-400">
-						{isLoading ? 'Registering...' : 'Register'}
+						{isLoading ? 'Creating account...' : 'Sign Up'}
 					</button>
 				</form>
 			</div>
