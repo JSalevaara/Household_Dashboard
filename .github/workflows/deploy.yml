@@ -11,6 +11,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      - name: Generate .env file
+        run: |
+          echo "${{secrets.ENV_FILE_CONTENTS}}" > .env
       - name: Deploy Production Stack
         run: |
           docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
