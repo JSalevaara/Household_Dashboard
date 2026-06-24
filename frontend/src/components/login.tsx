@@ -25,10 +25,7 @@ export const Login = () => {
 		setMessage(null);
 
 		try {
-			const response = await apiClient.post(
-				'https://localhost:8080/api/login',
-				formData,
-			);
+			const response = await apiClient.post('/api/login', formData);
 			const token = response.data.access_token;
 
 			localStorage.setItem('token', token);
