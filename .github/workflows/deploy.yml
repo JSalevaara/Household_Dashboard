@@ -17,5 +17,6 @@ jobs:
       - name: Deploy Production Stack
         run: |
           docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
+          docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -T backend alembic upgrade head
           docker compose -f docker-compose.yml -f docker-compose.prod.yml restart nginx
           docker system prune -f
