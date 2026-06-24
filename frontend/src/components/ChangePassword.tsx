@@ -53,7 +53,7 @@ export const ChangePassword = () => {
 			const token = localStorage.getItem('token');
 
 			await apiClient.put(
-				'/api/users/me/password',
+				'/users/me/password',
 				{
 					old_password: formData.oldPassword,
 					new_password: formData.newPassword,
