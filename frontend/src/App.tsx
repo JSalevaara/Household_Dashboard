@@ -11,17 +11,13 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { Settings } from './components/Settings';
 import { ChangePassword } from './components/ChangePassword';
 import { AdminDashboard } from './components/AdminDashboard';
-import { Layout } from './components/Layout'; // Make sure this path is correct for your project
-
+import { Layout } from './components/Layout';
 export default function App() {
 	return (
 		<Router>
 			<Routes>
-				{/* 1. ROUTES WITHOUT NAVBAR */}
 				<Route path="/login" element={<Login />} />
 				<Route path="/register" element={<Register />} />
-
-				{/* 2. ROUTES WITH NAVBAR (Wrapped in Layout) */}
 				<Route element={<Layout />}>
 					<Route
 						path="/dashboard"
