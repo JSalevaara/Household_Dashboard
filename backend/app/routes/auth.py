@@ -10,7 +10,7 @@ from app.core.security import get_current_user
 ph = PasswordHasher()
 router = APIRouter()
 
-@router.post("/api/login")
+@router.post("/login")
 async def login(credentials: schemas.UserLogin, db: AsyncSession = Depends(get_db)):
     user = await crud_user.get_user_by_username(db, username=credentials.username)
     
@@ -26,6 +26,6 @@ async def login(credentials: schemas.UserLogin, db: AsyncSession = Depends(get_d
     
     return {"access_token": access_token, "token_type": "bearer"}
 
-@router.get("/api/users/me", response_model=schemas.UserOut)
+@router.get("/users/me", response_model=schemas.UserOut)
 async def read_users_me(current_user: schemas.UserOut = Depends(get_current_user)):
     return current_user

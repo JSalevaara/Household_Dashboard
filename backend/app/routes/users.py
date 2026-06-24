@@ -10,7 +10,7 @@ ph = PasswordHasher()
 router = APIRouter()
 
 
-@router.post("/api/users", response_model=schemas.User)
+@router.post("/users", response_model=schemas.User)
 async def create_user(user_in: schemas.UserCreate, db: AsyncSession = Depends(get_db)):
     db_user = await crud_user.get_user_by_username(db, username=user_in.username)
     if db_user:
@@ -27,7 +27,7 @@ async def create_user(user_in: schemas.UserCreate, db: AsyncSession = Depends(ge
         print(f"CRITICAL DB ERROR during user creation: {e}")
         raise HTTPException(status_code=500, detail="Internal server error during user creation.")
     
-@router.put("/api/users/me/password")
+@router.put("/users/me/password")
 async def change_password(
     password_data: schemas.UserChangePassword,
     current_user = Depends(get_current_user),
