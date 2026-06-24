@@ -1,6 +1,7 @@
 */.venv
 .env
 .truth
+Todo.txt
 
 __pycache__/
 *.py[cod]
