@@ -10,7 +10,7 @@ ph = PasswordHasher()
 router = APIRouter(prefix="/users")
 
 
-@router.post("/", response_model=schemas.User)
+@router.post("", response_model=schemas.User)
 async def create_user(user_in: schemas.UserCreate, db: AsyncSession = Depends(get_db)):
     db_user = await crud_user.get_user_by_username(db, username=user_in.username)
     if db_user:
