@@ -25,6 +25,22 @@ export const ChangePassword = () => {
 		e.preventDefault();
 		setMessage(null);
 
+		if (formData.newPassword.length < 6) {
+			setMessage({
+				type: 'error',
+				text: 'New password must be atleast 6 characters long',
+			});
+			return;
+		}
+
+		if (formData.newPassword === formData.oldPassword) {
+			setMessage({
+				type: 'error',
+				text: 'New password cannot be the same as the old password!',
+			});
+			return;
+		}
+
 		if (formData.newPassword !== formData.confirmNewPassword) {
 			setMessage({ type: 'error', text: 'New passwords do not match!' });
 			return;
@@ -62,7 +78,14 @@ export const ChangePassword = () => {
 
 	return (
 		<div className="max-w-2xl mx-auto p-6">
-			<h1 className="text-3xl font-bold text-gray-800 mb-8">Settings</h1>
+			<div className="flex justify-between items-center mb-8">
+				<h1 className="text-3xl font-bold">Settings</h1>
+				<Link
+					to="/settings"
+					className="bg-gray-100 hover:bg-gray-200 text-gray-800 border border-gray-200 font-semibold py-2 px-4 rounded-lg transition-colors">
+					&larr; Back to settings
+				</Link>
+			</div>
 
 			<div className="bg-gray-50 rounded-xl shadow p-6">
 				<h2 className="text-xl font-semibold text-gray-800 mb-4">
@@ -97,7 +120,6 @@ export const ChangePassword = () => {
 						</button>
 					</div>
 
-					{/* New Password */}
 					<div className="relative">
 						<label className="block text-sm font-medium text-gray-700 mb-1">
 							New Password

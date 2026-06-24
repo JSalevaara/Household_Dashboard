@@ -5,6 +5,7 @@ from app.schemas import user_schemas as schemas
 from app.crud import user as crud_user
 from app.core.utils import create_access_token
 from argon2 import PasswordHasher
+from app.core.security import get_current_user
 
 ph = PasswordHasher()
 router = APIRouter()
@@ -24,3 +25,7 @@ async def login(credentials: schemas.UserLogin, db: AsyncSession = Depends(get_d
     access_token = create_access_token({"sub": str(user.username)})
     
     return {"access_token": access_token, "token_type": "bearer"}
+
+@router.get("/api/users/me", response_model=schemas.UserOut)
+async def read_users_me(current_user: schemas.UserOut = Depends(get_current_user)):
+    return current_user

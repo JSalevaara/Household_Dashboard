@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import apiClient from '../api/client';
 import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export const Login = () => {
+	const { checkAuth } = useAuth();
 	const navigate = useNavigate();
 	const [formData, setFormData] = useState({
 		username: '',
@@ -30,6 +32,7 @@ export const Login = () => {
 			const token = response.data.access_token;
 
 			localStorage.setItem('token', token);
+			await checkAuth();
 			setMessage({ type: 'success', text: 'Login successful! Welcome back.' });
 			setFormData({ username: '', password: '' });
 			navigate('/dashboard');

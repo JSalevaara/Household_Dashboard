@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, ConfigDict
+from pydantic import BaseModel, EmailStr, ConfigDict, Field
 from typing import Optional
 
 # User schemas
@@ -7,7 +7,9 @@ class UserBase(BaseModel):
     email: EmailStr
 
 class UserCreate(UserBase):
-    password: str
+    username: str = Field(..., min_length=5, max_length=20)
+    email: EmailStr
+    password: str = Field(..., min_length=6, description="Password must be atleast 6 characters long")
 
 class User(UserBase):
     id: int
@@ -39,3 +41,6 @@ class UserOut(BaseModel):
     household_id: Optional[int] = None
 
     model_config = ConfigDict(from_attributes=True)
+
+class PasswordReset(BaseModel):
+    new_password: str

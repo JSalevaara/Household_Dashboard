@@ -24,6 +24,15 @@ export const Register = () => {
 
 	const handleSubmit = async (e: React.SubmitEvent) => {
 		e.preventDefault();
+
+		if (formData.password.length < 6) {
+			setMessage({
+				type: 'error',
+				text: 'Password must be atleast 6 characters long',
+			});
+			return;
+		}
+
 		setIsLoading(true);
 		setMessage(null);
 
