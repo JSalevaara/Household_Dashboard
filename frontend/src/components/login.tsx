@@ -1,14 +1,14 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import apiClient from '../api/client';
 import { useNavigate } from 'react-router-dom';
 
-export const Register = () => {
+export const Login = () => {
 	const navigate = useNavigate();
 	const [formData, setFormData] = useState({
 		username: '',
-		email: '',
 		password: '',
 	});
+
 	const [message, setMessage] = useState<{
 		type: 'success' | 'error';
 		text: string;
@@ -19,52 +19,54 @@ export const Register = () => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
 
-	const handleSubmit = async (e: React.SubmitEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setIsLoading(true);
 		setMessage(null);
 
 		try {
-			const response = await apiClient.post('/api/users', formData);
-			setMessage({
-				type: 'success',
-				text: `Welcome ${response.data.username}! Your account has been created.`,
-			});
-			setFormData({ username: '', email: '', password: '' });
-			navigate('login');
+			const response = await apiClient.post(
+				'https://localhost:8080/api/login',
+				formData,
+			);
+			const token = response.data.access_token;
+
+			localStorage.setItem('token', token);
+			setMessage({ type: 'success', text: 'Login successful! Welcome back.' });
+			setFormData({ username: '', password: '' });
+			navigate('/dashboard');
 		} catch (error: any) {
-			if (error.response) {
-				const detail = error.response.data.detail;
-				if (error.response.status === 422 && Array.isArray(detail)) {
-					setMessage({ type: 'error', text: detail[0].msg });
-				} else {
-					setMessage({
-						type: 'error',
-						text: detail || 'Something went wrong.',
-					});
-				}
+			if (error.response && error.response.status === 401) {
+				setMessage({ type: 'error', text: 'Invalid username or password' });
 			} else {
 				setMessage({
 					type: 'error',
-					text: 'Network error. Please try again later.',
+					text: 'An error occured. Try again later.',
 				});
 			}
 		} finally {
 			setIsLoading(false);
 		}
 	};
+
 	return (
 		<div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
 			<div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8">
 				<h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
-					Join the Household
+					Welcome Back
 				</h2>
+
 				{message && (
 					<div
-						className={`p-4 rounded-lg mb-6 text-sm font-medium ${message.type === 'success' ? 'bg-green-500 text-green-700' : 'bg-red-100 text-red-800'}`}>
+						className={`p-4 rounded-lg mb-6 text-sm font-medium ${
+							message.type === 'success'
+								? 'bg-green-100 text-green-700'
+								: 'bg-red-100 text-red-700'
+						}`}>
 						{message.text}
 					</div>
 				)}
+
 				<form onSubmit={handleSubmit} className="space-y-6">
 					<div>
 						<label className="block text-sm font-medium text-gray-700 mb-1">
@@ -76,22 +78,7 @@ export const Register = () => {
 							value={formData.username}
 							onChange={handleChange}
 							required
-							className="w-full px-4- py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition-colors"
-							placeholder="JohnDoe"
-						/>
-					</div>
-					<div>
-						<label className="block text-sm font-medium text-gray-700 mb-1">
-							Email Address
-						</label>
-						<input
-							type="email"
-							name="email"
-							value={formData.email}
-							onChange={handleChange}
-							required
-							className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
-							placeholder="john@example.com"
+							className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-colors"
 						/>
 					</div>
 
@@ -105,16 +92,15 @@ export const Register = () => {
 							value={formData.password}
 							onChange={handleChange}
 							required
-							minLength={8}
-							className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
-							placeholder="••••••••"
+							className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-colors"
 						/>
 					</div>
+
 					<button
 						type="submit"
 						disabled={isLoading}
 						className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-colors disabled:bg-blue-400">
-						{isLoading ? 'Registering...' : 'Register'}
+						{isLoading ? 'Signing in...' : 'Log In'}
 					</button>
 				</form>
 			</div>

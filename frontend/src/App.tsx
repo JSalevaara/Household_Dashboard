@@ -1,12 +1,32 @@
-import './index.css';
-import { Register } from './components/register';
+import {
+	BrowserRouter as Router,
+	Routes,
+	Route,
+	Navigate,
+} from 'react-router-dom';
+import { Login } from './components/login'; // Adjust path if your components are in a folder!
+import { Register } from './components/register'; // Adjust path
+import { Dashboard } from './Dashboard';
+import ProtectedRoute from './components/ProtectedRoute';
 
-function App() {
+export default function App() {
 	return (
-		<div className="text-2xl font-bold underline">
-			<Register></Register>
-		</div>
+		<Router>
+			<Routes>
+				<Route path="/login" element={<Login />} />
+				<Route path="/register" element={<Register />} />
+
+				<Route
+					path="/dashboard"
+					element={
+						<ProtectedRoute>
+							<Dashboard />
+						</ProtectedRoute>
+					}
+				/>
+
+				<Route path="*" element={<Navigate to="/dashboard" replace />} />
+			</Routes>
+		</Router>
 	);
 }
-
-export default App;
