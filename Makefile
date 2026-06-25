@@ -27,6 +27,9 @@ db-shell:
 migrate:
 		$(DC_PROD) exec backend alembic upgrade head
 
+init_db:
+		$(DC_PROD) exec backend python -m app.init_db
+
 env-check:
 		$(DC_PROD) exec backend env | sort
 
