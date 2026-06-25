@@ -30,7 +30,7 @@ jobs:
         run: make restart-nginx
 
       - name: Fix Permissions
-        run make fix-Permissions
+        run: make fix-Permissions
         if: always()
 
       - name: Clean up old Docker resources
