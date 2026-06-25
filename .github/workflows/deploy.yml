@@ -13,10 +13,14 @@ jobs:
         uses: actions/checkout@v4
       - name: Generate .env file
         run: |
-          echo "${{secrets.ENV_FILE_CONTENTS}}" > .env
-      - name: Deploy Production Stack
-        run: |
-          make prod
-          make migrate
-          make restart-nginx
-          make clean
+          cat << 'EOF' > .env
+          ${{secrets.ENV_FILE_CONTENTS}}
+          EOF
+      - name: Start and Update Containers
+        run: make prod
+      - name: Run Database Migrations
+        run: make migrate
+      - name: Restart Nginx Proxy Manager
+        run: make restart-nginx
+      - name: Clean up old Docker resources
+        run: make clean
