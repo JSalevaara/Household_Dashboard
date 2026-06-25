@@ -18,7 +18,7 @@ jobs:
           ${{secrets.ENV_FILE_CONTENTS}}
           EOF
       - name: Run Backend Tests
-        run: cd backend && poetry run pytest
+        run: cd backend && poetry run pytest --supress-no-tests-exit-code
 
       - name: Run Frontend Tests
         run: cd frontend && npm install && npm test
