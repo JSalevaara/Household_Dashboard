@@ -20,7 +20,7 @@ clean:
 		docker system prune -a --volumes -f
 
 db-shell:
-		$(DC_PROD) exec db 'psql -U $(db_user) -d $(db_name)'
+		$(DC_PROD) exec db 'psql -U $(DB_USER) -d $(DB_NAME)'
 
 migrate:
 		$(DC_PROD) exec backend alembic upgrade head
@@ -29,4 +29,4 @@ env-check:
 		$(DC_PROD) exec backend env | sort
 
 restart-nginx:
-		$(DC_PROD) restart nginx
+		$(DC_PROD) restart nginxH
