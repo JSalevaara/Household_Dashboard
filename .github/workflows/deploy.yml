@@ -20,6 +20,7 @@ jobs:
         run: make prod
       - name: Run Database Migrations
         run: make migrate
+        run: make init_db
       - name: Restart Nginx Proxy Manager
         run: make restart-nginx
       - name: Clean up old Docker resources
