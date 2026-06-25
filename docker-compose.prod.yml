@@ -1,5 +1,8 @@
 services:
   backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
     restart: always
     command: gunicorn app.main:app -w 4 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8000
     healthcheck:
@@ -42,7 +45,7 @@ services:
       retries: 3
 
   db-backup:
-    image: postgres:13
+    image: postgres:15 # 1. Updated to match your DB version
     restart: always
     env_file:
       - .env
@@ -54,10 +57,21 @@ services:
     volumes:
       - /var/opt/dashboard_backups:/backups
     command: >
-      sh -c " echo 'Backup service started.'; while true; do
-        filename=/backups/dump_$$(date +%Y-%m-%d_%H-%M-%S).sql;
-        echo \"Running backup to $$filename...\";
-        pg_dump -h db -U ${DB_USER:-user} ${DB_NAME:-household_db} > $$filename;
-        echo 'Backup completed. Sleeping for 24 hours...';
-        sleep 86400;
-      done "
+      sh -c "
+        echo 'Backup service started.';
+        while true; do
+          # 2. Added .gz extension
+          filename=/backups/dump_$$(date +%Y-%m-%d_%H-%M-%S).sql.gz;
+          echo \"Running backup to $$filename...\";
+          
+          # 3. Piped pg_dump output into gzip
+          pg_dump -h db -U ${DB_USER:-user} ${DB_NAME:-household_db} | gzip > $$filename;
+          
+          # 4. Find and delete files older than 7 days (+7)
+          echo 'Backup completed. Cleaning up backups older than 7 days...';
+          find /backups -type f -name '*.sql.gz' -mtime +7 -delete;
+          
+          echo 'Cleanup done. Sleeping for 24 hours...';
+          sleep 86400;
+        done
+      "

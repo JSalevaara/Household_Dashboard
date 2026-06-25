@@ -4,6 +4,9 @@ services:
       - "${DB_LOCAL_PORT:-5432}:5432"
 
   backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
     ports:
       - "8080:8000"
     volumes:
