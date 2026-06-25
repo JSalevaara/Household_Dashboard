@@ -17,6 +17,21 @@ jobs:
           cat << 'EOF' > .env
           ${{secrets.ENV_FILE_CONTENTS}}
           EOF
+      - name: Run Backend tests
+        run: |
+          cd backend
+          poetry run pytest tests --supress-no-test-exit-code
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run frontend tests
+        run: |
+          cd frontend
+          npm install
+          npm test
 
       - name: Start and Update Containers
         run: make prod
