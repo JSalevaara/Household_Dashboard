@@ -29,4 +29,4 @@ env-check:
 		$(DC_PROD) exec backend env | sort
 
 restart-nginx:
-		$(DC_PROD) restart nginxH
+		$(DC_PROD) restart nginx
