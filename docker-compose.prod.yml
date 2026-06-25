@@ -5,11 +5,6 @@ services:
       context: ./backend
       dockerfile: Dockerfile.prod
     restart: always
-    deploy:
-      update_config:
-        parallelism: 1
-        delay: 10s
-        order: start-first
     command: gunicorn app.main:app -w 4 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8000
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
