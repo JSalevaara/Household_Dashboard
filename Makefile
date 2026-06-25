@@ -9,18 +9,18 @@ dev-down:
 dev-logs:
 		$(DC_DEV) logs -f
 prod:
-		$(DC_PROD) -f docker-compose.yml -f docker-compose.prod.yml up --build -d
+		$(DC_PROD) up --build -d
 prod-down:
-		$(DC_PROD) -f docker-compose.yml -f docker-compose.prod.yml down
+		$(DC_PROD) down
 prod-logs:
-		$(DC_PROD) -f docker-compose.yml -f docker-compose.prod.yml logs -f
+		$(DC_PROD) logs -f
 
 clean:
 		@echo "WARNING: This removes all stopped containers, used networks and volumes!"
 		docker system prune -a --volumes -f
 
 db-shell:
-		$(DC_PROD) exec db 'psql -U $(DB_USER) -d $(DB_NAME)'
+		$(DC_PROD) exec db psql -U $(DB_USER) -d $(DB_NAME)
 
 migrate:
 		$(DC_PROD) exec backend alembic upgrade head
