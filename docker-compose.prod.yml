@@ -40,3 +40,24 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+
+  db-backup:
+    image: postgres:13
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - PGPASSWORD=${DB_PASSWORD:-password}
+    depends:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./var/opt/dashboard_backups:/backups
+    command: >
+      sh -c " echo 'Backup service started.'; while true; do
+        filename=/backups/dump_$$(date +%Y-%m-%d_%H-%M-%S).sql;
+        echo \"Running backup to $$filename...\";
+        pg_dump -h db -U ${DB_USER:-user} ${DB_NAME:-household_db} > $$filename;
+        echo 'Backup completed. Sleeping for 24 hours...';
+        sleep 86400;
+      done "
