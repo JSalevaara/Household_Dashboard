@@ -125,11 +125,11 @@ export const AdminDashboard = () => {
 
 	return (
 		<div className="p-8 max-w-6xl mx-auto">
-			<div className="flex justify-between items-center mb-8">
-				<h1 className="text-2xl font-bold">Admin Control Panel</h1>
+			<div className="flex justify-between items-center mb-8 gap-4">
+				<h1 className="text-xl md:text-3xl font-bold">Admin Control Panel</h1>
 				<Link
 					to="/"
-					className="bg-gray-100 hover:bg-gray-200 text-gray-800 border border-gray-200 font-semibold py-2 px-4 rounded-lg transition-colors">
+					className="text-sm md:text-xl bg-gray-100 hover:bg-gray-200 text-gray-800 border border-gray-200 font-semibold py-2 px-4 rounded-lg transition-colors whitespace-nowrap">
 					&larr; Back to Dashboard
 				</Link>
 			</div>
