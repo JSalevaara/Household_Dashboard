@@ -17,8 +17,9 @@ jobs:
           cat << 'EOF' > .env
           ${{secrets.ENV_FILE_CONTENTS}}
           EOF
+
       - name: Run Backend Tests
-        run: cd backend && poetry run pytest --supress-no-tests-exit-code
+        run: cd backend && poetry run pytest tests --supress-no-tests-exit-code
 
       - name: Run Frontend Tests
         run: cd frontend && npm install && npm test
