@@ -13,16 +13,20 @@ export const AdminDashboard = () => {
 	const [users, setUsers] = useState<User[]>([]);
 	const [stats, setStats] = useState({ total_users: 0, total_households: 0 });
 	const [loading, setLoading] = useState(true);
+	const [healthStatus, setHealthStatus] = useState<string | null>(null);
+	console.log(healthStatus);
 
 	useEffect(() => {
 		const fetchAdminData = async () => {
 			try {
-				const [usersRes, statsRes] = await Promise.all([
+				const [usersRes, statsRes, healthRes] = await Promise.all([
 					apiClient.get('/admin/users'),
 					apiClient.get('/admin/stats'),
+					apiClient.get('/admin/health'),
 				]);
 				setUsers(usersRes.data);
 				setStats(statsRes.data);
+				setHealthStatus(healthRes.data.status);
 			} catch (err) {
 				console.error('Failed to fetch admin data', err);
 			} finally {
