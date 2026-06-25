@@ -13,7 +13,7 @@ dev-db-shell:
 prod:
 		@echo ""
 		@echo "🚀 === Starting Core Application === 🚀"
-		$(DC_PROD) build --quiet
+		$(DC_PROD) build
 		$(DC_PROD) up -d
 		@echo ""
 		@echo "📊 === Starting Monitoring Stack === 📊"
