@@ -22,6 +22,7 @@ jobs:
         run: |
           make prod
           make migrate
+          make init_db
       - name: Restart Nginx Proxy Manager
         run: make restart-nginx
       - name: Clean up old Docker resources
