@@ -6,7 +6,9 @@ RUN apt-get update && apt-get install -y curl build-essential && rm -rf /var/lib
 
 RUN pip install "poetry==2.0.0"
 
-COPY pyproject.toml poetry.lock* ./
+COPY ./pyproject.toml ./poetry.lock* ./
+RUN ls -l poetry.lock
+RUN head -n 5 poetry.lock
 
 RUN poetry config virtualenvs.create false && poetry install --only main
 
