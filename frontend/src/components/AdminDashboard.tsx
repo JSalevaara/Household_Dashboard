@@ -17,6 +17,25 @@ export const AdminDashboard = () => {
 	const [loading, setLoading] = useState(true);
 	const { currentUser } = useAuth();
 
+	// State to track exact position of the dropdown
+	const [menuState, setMenuState] = useState<{
+		id: number;
+		top: number;
+		right: number;
+	} | null>(null);
+
+	// Global listener to close the dropdown if you click away or scroll
+	useEffect(() => {
+		const closeMenu = () => setMenuState(null);
+		window.addEventListener('click', closeMenu);
+		window.addEventListener('scroll', closeMenu, true);
+
+		return () => {
+			window.removeEventListener('click', closeMenu);
+			window.removeEventListener('scroll', closeMenu, true);
+		};
+	}, []);
+
 	useEffect(() => {
 		const fetchAdminData = async () => {
 			try {
@@ -34,6 +53,24 @@ export const AdminDashboard = () => {
 		};
 		fetchAdminData();
 	}, []);
+
+	// Function to calculate exact button position and open the menu
+	const toggleMenu = (e: React.MouseEvent, user: User) => {
+		e.stopPropagation();
+
+		if (menuState?.id === user.id) {
+			setMenuState(null);
+			return;
+		}
+
+		const rect = e.currentTarget.getBoundingClientRect();
+
+		setMenuState({
+			id: user.id,
+			top: rect.bottom + 8, // 8px below the button
+			right: window.innerWidth - rect.right, // Align with the right side
+		});
+	};
 
 	const toggleRole = async (user: User) => {
 		const newRole = user.role === 'admin' ? 'user' : 'admin';
@@ -115,16 +152,20 @@ export const AdminDashboard = () => {
 				</div>
 			</div>
 
-			<div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-				<table className="w-full text-left">
+			<div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-x-auto min-h-[400px]">
+				<table className="w-full text-left min-w-[800px]">
 					<thead className="bg-gray-50 border-b border-gray-100">
 						<tr>
-							<th className="px-6 py-4 font-semibold text-gray-600">
+							<th className="px-6 py-4 font-semibold text-gray-600 whitespace-nowrap">
 								Username
 							</th>
-							<th className="px-6 py-4 font-semibold text-gray-600">Email</th>
-							<th className="px-6 py-4 font-semibold text-gray-600">Role</th>
-							<th className="px-6 py-4 font-semibold text-gray-600 text-right">
+							<th className="px-6 py-4 font-semibold text-gray-600 whitespace-nowrap">
+								Email
+							</th>
+							<th className="px-6 py-4 font-semibold text-gray-600 whitespace-nowrap">
+								Role
+							</th>
+							<th className="px-6 py-4 font-semibold text-gray-600 text-right whitespace-nowrap">
 								Actions
 							</th>
 						</tr>
@@ -132,9 +173,9 @@ export const AdminDashboard = () => {
 					<tbody className="divide-y divide-gray-100">
 						{users.map((user) => (
 							<tr key={user.id} className="hover:bg-gray-50 transition-colors">
-								<td className="px-6 py-4">{user.username}</td>
-								<td className="px-6 py-4">{user.email}</td>
-								<td className="px-6 py-4">
+								<td className="px-6 py-4 whitespace-nowrap">{user.username}</td>
+								<td className="px-6 py-4 whitespace-nowrap">{user.email}</td>
+								<td className="px-6 py-4 whitespace-nowrap">
 									<span
 										className={`px-3 py-1 rounded-full text-xs font-bold ${
 											user.role === 'admin'
@@ -144,35 +185,66 @@ export const AdminDashboard = () => {
 										{user.role}
 									</span>
 								</td>
-								<td className="px-6 py-4 flex justify-end gap-4">
-									{!user.super && (
-										<>
-											{user.id !== currentUser?.id && (
-												<button
-													onClick={() => toggleRole(user)}
-													className="text-sm font-semibold text-blue-600 hover:text-blue-800">
-													Change to {user.role === 'admin' ? 'User' : 'Admin'}
-												</button>
-											)}
-
-											<button
-												onClick={() => resetPassword(user.id, user.username)}
-												className="text-sm font-semibold text-red-600 hover:text-red-800">
-												Reset Password
-											</button>
-											{user.id !== currentUser?.id && (
-												<button
-													onClick={() => deleteUser(user.id, user.username)}
-													className="text-sm font-semibold text-yellow-600 hover:text-yellow-800">
-													Delete User
-												</button>
-											)}
-										</>
-									)}
-									{user.super && (
+								<td className="px-6 py-4 text-right whitespace-nowrap relative">
+									{user.super ? (
 										<span className="text-sm font-bold text-gray-400 cursor-not-allowed">
-											Super
+											Super Admin
 										</span>
+									) : (
+										<div className="flex justify-end">
+											{/* The Trigger Button */}
+											<button
+												onClick={(e) => toggleMenu(e, user)}
+												className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors focus:outline-none"
+												aria-label="Options">
+												<svg
+													className="w-5 h-5"
+													fill="currentColor"
+													viewBox="0 0 20 20">
+													<path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+												</svg>
+											</button>
+
+											{/* The Fixed Breakout Menu */}
+											{menuState?.id === user.id && (
+												<div
+													className="fixed w-48 bg-white rounded-xl shadow-xl z-50 border border-gray-200 py-2 overflow-hidden flex flex-col items-start"
+													style={{ top: menuState.top, right: menuState.right }}
+													onClick={(e) => e.stopPropagation()}>
+													{user.id !== currentUser?.id && (
+														<button
+															onClick={() => {
+																toggleRole(user);
+																setMenuState(null);
+															}}
+															className="w-full text-left px-4 py-2 text-sm font-semibold text-blue-600 hover:bg-gray-50 transition-colors">
+															Change to{' '}
+															{user.role === 'admin' ? 'User' : 'Admin'}
+														</button>
+													)}
+
+													<button
+														onClick={() => {
+															resetPassword(user.id, user.username);
+															setMenuState(null);
+														}}
+														className="w-full text-left px-4 py-2 text-sm font-semibold text-red-600 hover:bg-gray-50 transition-colors">
+														Reset Password
+													</button>
+
+													{user.id !== currentUser?.id && (
+														<button
+															onClick={() => {
+																deleteUser(user.id, user.username);
+																setMenuState(null);
+															}}
+															className="w-full text-left px-4 py-2 text-sm font-semibold text-yellow-600 hover:bg-gray-50 transition-colors">
+															Delete User
+														</button>
+													)}
+												</div>
+											)}
+										</div>
 									)}
 								</td>
 							</tr>
