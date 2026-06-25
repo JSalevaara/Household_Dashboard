@@ -1,9 +1,15 @@
 services:
+
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile.prod
     restart: always
+    deploy:
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
     command: gunicorn app.main:app -w 4 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8000
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
@@ -45,7 +51,7 @@ services:
       retries: 3
 
   db-backup:
-    image: postgres:15 # 1. Updated to match your DB version
+    image: postgres:15
     restart: always
     env_file:
       - .env
