@@ -1,15 +1,32 @@
+DC_DEV = docker compose
+DC_PROD = docker compose -f docker-compose.yml -f docker-compose.prod.yml
+include .env
+
 dev:
-		docker compose up -d --build
+		$(DC_DEV) up -d --build
 dev-down:
-		docker compose down
+		$(DC_DEV) down
 dev-logs:
-		docker compose logs -f
+		$(DC_DEV) logs -f
 prod:
-		docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build -dev
+		$(DC_PROD) -f docker-compose.yml -f docker-compose.prod.yml up --build -d
 prod-down:
-		docker compose -f docker-compose.yml -f docker-compose.prod.yml down
+		$(DC_PROD) -f docker-compose.yml -f docker-compose.prod.yml down
 prod-logs:
-		docker compose -f docker-compose.yml -f docker-compose.prod.yml logs -f
+		$(DC_PROD) -f docker-compose.yml -f docker-compose.prod.yml logs -f
 
 clean:
+		@echo "WARNING: This removes all stopped containers, used networks and volumes!"
 		docker system prune -a --volumes -f
+
+db-shell:
+		$(DC_PROD) exec db psql -U $(db_user) -d $(db_name)
+
+migrate:
+		$(DC_PROD) exec backend alembic upgrade head
+
+env-check:
+		$(DC_PROD) exec backend env | sort
+
+restart-nginx:
+		$(DC_PROD) restart nginx

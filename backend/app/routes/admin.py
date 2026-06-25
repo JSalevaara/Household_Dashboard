@@ -15,9 +15,6 @@ router = APIRouter(prefix="/admin", tags=["admin"], dependencies=[Depends(get_cu
 raw_super_admins = os.getenv("SUPER_ADMINS", "admin")
 
 super_admins_list = [admin.strip() for admin in raw_super_admins.split(",")]
-print("\n" + "="*50)
-print(f"DEBUG: Super Admins loaded: {raw_super_admins}")
-print("="*50 + "\n")
 
 @router.get("/stats")
 async def get_system_stats(db: AsyncSession = Depends(get_db)):
