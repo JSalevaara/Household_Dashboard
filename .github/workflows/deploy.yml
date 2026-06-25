@@ -27,10 +27,10 @@ jobs:
           make init-db
 
       - name: Restart Nginx
-        run: make restart-nginx
+        run: make reload-nginx
 
       - name: Fix Permissions
-        run: make fix-Permissions
+        run: make fix-perms
         if: always()
 
       - name: Clean up old Docker resources
