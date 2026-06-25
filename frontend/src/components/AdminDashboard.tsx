@@ -1,18 +1,21 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import apiClient from '../api/client';
+import { useAuth } from '../context/AuthContext';
 
 interface User {
 	id: number;
 	username: string;
 	email: string;
 	role: string;
+	super: boolean;
 }
 
 export const AdminDashboard = () => {
 	const [users, setUsers] = useState<User[]>([]);
 	const [stats, setStats] = useState({ total_users: 0, total_households: 0 });
 	const [loading, setLoading] = useState(true);
+	const { currentUser } = useAuth();
 
 	useEffect(() => {
 		const fetchAdminData = async () => {
@@ -58,6 +61,25 @@ export const AdminDashboard = () => {
 			console.error(err);
 			alert(
 				`Failed to reset password: ${err.response?.data?.detail || err.message}`,
+			);
+		}
+	};
+
+	const deleteUser = async (userId: number, username: string) => {
+		const confirmDelete = window.confirm(
+			`Are you sure you want to delete the user ${username}? This action cannot be undone.`,
+		);
+
+		if (!confirmDelete) return;
+
+		try {
+			await apiClient.delete(`/admin/users/${userId}/delete`);
+			setUsers(users.filter((u) => u.id !== userId));
+			alert(`User ${username} has been successfully deleted!`);
+		} catch (err: any) {
+			console.error(err);
+			alert(
+				`Failed to delete user: ${err.response?.data?.detail || err.message}`,
 			);
 		}
 	};
@@ -123,23 +145,33 @@ export const AdminDashboard = () => {
 									</span>
 								</td>
 								<td className="px-6 py-4 flex justify-end gap-4">
-									{user.username !== 'your_username' ? (
+									{!user.super && (
 										<>
-											<button
-												onClick={() => toggleRole(user)}
-												className="text-sm font-semibold text-blue-600 hover:text-blue-800">
-												Change to {user.role === 'admin' ? 'User' : 'Admin'}
-											</button>
+											{user.id !== currentUser?.id && (
+												<button
+													onClick={() => toggleRole(user)}
+													className="text-sm font-semibold text-blue-600 hover:text-blue-800">
+													Change to {user.role === 'admin' ? 'User' : 'Admin'}
+												</button>
+											)}
 
 											<button
 												onClick={() => resetPassword(user.id, user.username)}
 												className="text-sm font-semibold text-red-600 hover:text-red-800">
 												Reset Password
 											</button>
+											{user.id !== currentUser?.id && (
+												<button
+													onClick={() => deleteUser(user.id, user.username)}
+													className="text-sm font-semibold text-yellow-600 hover:text-yellow-800">
+													Delete User
+												</button>
+											)}
 										</>
-									) : (
+									)}
+									{user.super && (
 										<span className="text-sm font-bold text-gray-400 cursor-not-allowed">
-											Super Admin
+											Super
 										</span>
 									)}
 								</td>

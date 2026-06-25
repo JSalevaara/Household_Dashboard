@@ -38,6 +38,7 @@ class UserOut(BaseModel):
     username: str
     email: str
     role: str
+    super: bool
     household_id: Optional[int] = None
 
     model_config = ConfigDict(from_attributes=True)

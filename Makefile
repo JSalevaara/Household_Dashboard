@@ -8,6 +8,8 @@ dev-down:
 		$(DC_DEV) down
 dev-logs:
 		$(DC_DEV) logs -f
+dev-db-shell:
+		$(DC_DEV) exec db psql -U testuser -d dashboard_db
 prod:
 		$(DC_PROD) -f docker-compose.yml -f docker-compose.prod.yml up --build -d
 prod-down:

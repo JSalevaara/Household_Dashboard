@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		}
 
 		try {
-			const response = await apiClient.get('/users/me');
+			const response = await apiClient.get('/me');
 			setCurrentUser(response.data);
 		} catch (error) {
 			console.error('Token invalid or expired');
