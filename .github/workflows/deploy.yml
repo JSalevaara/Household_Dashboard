@@ -19,8 +19,9 @@ jobs:
       - name: Start and Update Containers
         run: make prod
       - name: Run Database Migrations
-        run: make migrate
-        run: make init_db
+        run: |
+          make prod
+          make migrate
       - name: Restart Nginx Proxy Manager
         run: make restart-nginx
       - name: Clean up old Docker resources
