@@ -17,10 +17,6 @@ prod-down:
 prod-logs:
 		$(DC_PROD) logs -f
 
-clean:
-		@echo "WARNING: This removes all stopped containers, used networks and volumes!"
-		docker system prune -a --volumes -f
-
 db-shell:
 		$(DC_PROD) exec db psql -U $(DB_USER) -d $(DB_NAME)
 
@@ -33,5 +29,17 @@ init-db:
 env-check:
 		$(DC_PROD) exec backend env | sort
 
-restart-nginx:
-		$(DC_PROD) restart nginx
+# --- NEW: Graceful Reload (0 dropped connections) ---
+reload-nginx:
+		@echo "Gracefully reloading Nginx config and DNS..."
+		$(DC_PROD) exec nginx nginx -s reload
+
+# --- NEW: Safe Cleanup (Won't crash your server) ---
+clean:
+		@echo "Pruning old unused Docker images (safely)..."
+		docker image prune -af --filter "until=24h"
+
+# --- NEW: Safe permission fix (just in case dev files get stuck) ---
+fix-perms:
+		@echo "Fixing permissions using container..."
+		docker run --rm -v $(shell pwd):/app -w /app alpine chown -R $(shell id -u):$(shell id -g) .

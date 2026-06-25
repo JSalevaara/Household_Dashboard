@@ -11,18 +11,28 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
       - name: Generate .env file
         run: |
           cat << 'EOF' > .env
           ${{secrets.ENV_FILE_CONTENTS}}
           EOF
+
       - name: Start and Update Containers
         run: make prod
+
       - name: Run Database Migrations
         run: |
           make migrate
           make init-db
-      - name: Restart Nginx Proxy Manager
+
+      - name: Restart Nginx
         run: make restart-nginx
+
+      - name: Fix Permissions
+        run make fix-Permissions
+        if: always()
+
       - name: Clean up old Docker resources
         run: make clean
+        if: always()
