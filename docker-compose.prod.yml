@@ -48,11 +48,11 @@ services:
       - .env
     environment:
       - PGPASSWORD=${DB_PASSWORD:-password}
-    depends:
+    depends_on:
       db:
         condition: service_healthy
     volumes:
-      - ./var/opt/dashboard_backups:/backups
+      - /var/opt/dashboard_backups:/backups
     command: >
       sh -c " echo 'Backup service started.'; while true; do
         filename=/backups/dump_$$(date +%Y-%m-%d_%H-%M-%S).sql;
