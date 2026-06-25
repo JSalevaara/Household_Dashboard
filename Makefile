@@ -25,10 +25,10 @@ db-shell:
 		$(DC_PROD) exec db psql -U $(DB_USER) -d $(DB_NAME)
 
 migrate:
-		$(DC_PROD) exec backend alembic upgrade head
+		$(DC_PROD) exec -T backend alembic upgrade head
 
-init_db:
-		$(DC_PROD) exec backend python -m app.init_db
+init-db:
+		$(DC_PROD) exec -T backend python -m app.init_db
 
 env-check:
 		$(DC_PROD) exec backend env | sort
