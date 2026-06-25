@@ -2,6 +2,7 @@
 .env
 .truth
 Todo.txt
+.pytest_cache/
 
 __pycache__/
 *.py[cod]
