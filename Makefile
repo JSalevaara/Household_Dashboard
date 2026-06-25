@@ -35,3 +35,6 @@ env-check:
 
 restart-nginx:
 		$(DC_PROD) restart nginx
+
+clean-perms:
+	docker compose -f docker-compose.yml -f docker-compose.prod.yml run --rm backend rm -rf /app/alembic/__pycache__

@@ -26,3 +26,6 @@ jobs:
         run: make restart-nginx
       - name: Clean up old Docker resources
         run: make clean
+      - name: Cleanup permissions
+        run: make clean-perms
+        if: always()
