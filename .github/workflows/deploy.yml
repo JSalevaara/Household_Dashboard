@@ -26,6 +26,3 @@ jobs:
         run: make restart-nginx
       - name: Clean up old Docker resources
         run: make clean
-      - name: Cleanup permissions
-        run: sudo chown -R $USER:$USER .
-        if: always()
