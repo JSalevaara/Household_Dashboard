@@ -4,12 +4,15 @@ load_dotenv()  # Load environment variables from .env file
 from fastapi import FastAPI
 from app.routes import users, auth, admin
 from fastapi.middleware.cors import CORSMiddleware
+from prometheus_fastapi_instrumentator import Instrumentator
 
 app = FastAPI(
     title="household_dashboard",
     description="A household management dashboard app",
     version="0.1.0"
 )
+
+Instrumentator().instrument(app).expose(app)
 
 allow_origins = ["http://localhost:5173","http://127.0.0.1:5173"]
 if os.getenv("ALLOWED_ORIGIN"):

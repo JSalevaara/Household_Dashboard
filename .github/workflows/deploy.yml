@@ -17,6 +17,11 @@ jobs:
           cat << 'EOF' > .env
           ${{secrets.ENV_FILE_CONTENTS}}
           EOF
+      - name: Run Backend Tests
+        run: cd backend && poetry run pytest
+
+      - name: Run Frontend Tests
+        run: cd frontend && npm install && npm test
 
       - name: Start and Update Containers
         run: make prod
