@@ -20,7 +20,7 @@ clean:
 		docker system prune -a --volumes -f
 
 db-shell:
-		$(DC_PROD) exec db psql -U $(db_user) -d $(db_name)
+		$(DC_PROD) exec db 'psql -U $(db_user) -d $(db_name)''
 
 migrate:
 		$(DC_PROD) exec backend alembic upgrade head
