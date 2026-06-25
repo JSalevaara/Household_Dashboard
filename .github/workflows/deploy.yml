@@ -17,6 +17,12 @@ jobs:
           cat << 'EOF' > .env
           ${{secrets.ENV_FILE_CONTENTS}}
           EOF
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          # The line below is the "magic" that fixes your 127 error
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
       - name: Run Backend tests
         run: |
           cd backend
