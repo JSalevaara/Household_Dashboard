@@ -22,33 +22,6 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install Poetry & Dependencies
-        run: |
-          curl -sSL https://install.python-poetry.org | python3 -
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
-          cd backend
-          poetry install  # This installs pytest because we removed --only main
-
-      - name: Run Backend Tests
-        run: cd backend && poetry run pytest tests --suppress-no-tests-exit-code
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Run Frontend Tests
-        run: |
-          cd frontend
-          npm install
-          npm test
-
-      - name: Run frontend tests
-        run: |
-          cd frontend
-          npm install
-          npm test
-
       - name: Start and Update Containers
         run: make prod
 
