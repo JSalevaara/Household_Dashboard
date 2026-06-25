@@ -26,6 +26,6 @@ async def login(credentials: schemas.UserLogin, db: AsyncSession = Depends(get_d
     
     return {"access_token": access_token, "token_type": "bearer"}
 
-@router.get("/users/me", response_model=schemas.UserOut)
+@router.get("/me", response_model=schemas.UserOut)
 async def read_users_me(current_user: schemas.UserOut = Depends(get_current_user)):
     return current_user

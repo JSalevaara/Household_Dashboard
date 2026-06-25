@@ -22,7 +22,8 @@ class User(Base):
     username: Mapped[str] = mapped_column(String(50), unique=True, index=True)
     email: Mapped[str] = mapped_column(String(100), unique=True, index=True)
     hashed_password: Mapped[str] = mapped_column(String(255))
-    role: Mapped[str] = mapped_column(String, default="user") # Updated to use Mapped
+    role: Mapped[str] = mapped_column(String, default="user")
+    super: Mapped[bool] = mapped_column(Boolean, default=False)
 
     household_id: Mapped[Optional[int]] = mapped_column(ForeignKey("households.id"))
     household: Mapped[Optional["Household"]] = relationship(back_populates="users")
