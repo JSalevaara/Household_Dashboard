@@ -84,7 +84,7 @@ export const Login = () => {
 					</div>
 
 					<div>
-						<div className="relative">
+						<div className="relative group">
 							<label className="block text-sm font-medium text-gray-700 mb-1">
 								Password
 							</label>

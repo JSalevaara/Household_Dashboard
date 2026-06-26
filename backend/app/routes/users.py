@@ -62,7 +62,7 @@ async def change_username(
 ):
     try:
         ph.verify(current_user.hashed_password, username_data.password)
-    except:
+    except VerifyMismatchError:
         raise HTTPException(status_code=400, detail="Incorrect password")
     
     db_user = await crud_user.get_user_by_username(db, username=username_data.new_username)
@@ -75,4 +75,6 @@ async def change_username(
     except SQLAlchemyError as e:
         await db.rollback()
         raise HTTPException(status_code=500, detail="Internal server error during username update.")
+    
+    return {"message": "Username updated successfully"}
 
