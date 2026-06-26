@@ -1,11 +1,12 @@
+import jwt
+import os
 
 from datetime import datetime, timedelta
-from fastapi import Depends, HTTPException, status
 from datetime import datetime, timedelta, timezone
+from dotenv import load_dotenv
 
-import jwt
-
-SECRET_KEY = "your-secret-key"
+load_dotenv()
+SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
 def create_access_token(data: dict):
     to_encode = data.copy()

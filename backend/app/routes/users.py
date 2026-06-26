@@ -1,9 +1,14 @@
+#External imports
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.exc import SQLAlchemyError
+from argon2 import PasswordHasher
+from argon2.exceptions import VerifyMismatchError
+
+#Internal imports
 from app.core.database import get_db
 from app.schemas import user_schemas as schemas
 from app.crud import user as crud_user
-from argon2 import PasswordHasher
 from app.core.security import get_current_user
 
 ph = PasswordHasher()
@@ -35,13 +40,39 @@ async def change_password(
 ):
     try:
         ph.verify(current_user.hashed_password, password_data.old_password)
-    except:
+    except VerifyMismatchError:
         raise HTTPException(status_code=400, detail="Incorrect old password")
     
     new_hashed_pw = ph.hash(password_data.new_password)
     current_user.hashed_password = new_hashed_pw
     
-    await db.commit()
+    try:
+        await db.commit()
+    except SQLAlchemyError as e:
+        await db.rollback()
+        raise HTTPException(status_code=500, detail="Internal server error during password update.")
     
     return {"message": "Password updated successfully"}
+
+@router.put("/me/username")
+async def change_username(
+    username_data: schemas.UserChangeUsername,
+    current_user = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    try:
+        ph.verify(current_user.hashed_password, username_data.password)
+    except:
+        raise HTTPException(status_code=400, detail="Incorrect password")
+    
+    db_user = await crud_user.get_user_by_username(db, username=username_data.new_username)
+    if db_user:
+        raise HTTPException(status_code=409, detail="Username already taken.")
+    
+    current_user.username = username_data.new_username
+    try:
+        await db.commit()
+    except SQLAlchemyError as e:
+        await db.rollback()
+        raise HTTPException(status_code=500, detail="Internal server error during username update.")
 

@@ -10,6 +10,7 @@ import { Dashboard } from './Dashboard';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { Settings } from './components/Settings';
 import { ChangePassword } from './components/ChangePassword';
+import { ChangeUsername } from './components/ChangeUsername';
 import { AdminDashboard } from './components/AdminDashboard';
 import { Layout } from './components/Layout';
 export default function App() {
@@ -45,6 +46,13 @@ export default function App() {
 							</ProtectedRoute>
 						}
 					/>
+					<Route
+						path="/settings/changeusername"
+						element={
+							<ProtectedRoute>
+								<ChangeUsername />
+							</ProtectedRoute>
+						}></Route>
 
 					<Route
 						path="/admin"
@@ -55,8 +63,6 @@ export default function App() {
 						}
 					/>
 				</Route>
-
-				{/* 3. CATCH-ALL REDIRECT */}
 				<Route path="*" element={<Navigate to="/dashboard" replace />} />
 			</Routes>
 		</Router>
