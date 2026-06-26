@@ -48,6 +48,9 @@ jobs:
           python-version: '3.12'
       - name: Install Poetry
         run: pip install "poetry==2.0.0"
+      - name: Generate Fresh Lockfile
+        working-directory: ./backend
+        run: poetry lock
       - name: Install dependencies
         working-directory: ./backend
         run: poetry install --with dev
