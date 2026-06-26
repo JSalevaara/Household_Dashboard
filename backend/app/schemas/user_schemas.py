@@ -32,6 +32,10 @@ class UserChangePassword(BaseModel):
     new_password: str
     confirm_new_password: str
 
+class UserChangeUsername(BaseModel):
+    password: str
+    new_username: str
+
 class UserOut(BaseModel):
     id: int
     username: str

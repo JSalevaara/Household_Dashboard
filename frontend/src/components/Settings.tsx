@@ -20,6 +20,13 @@ export const Settings = () => {
 							Change Password
 						</Link>
 					</div>
+					<div className="space-y-4 mt-6">
+						<Link
+							to="/settings/changeUsername"
+							className="block w-full text-center px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 hover:border-blue-500 hover:text-blue-600 transition-all shadow-sm">
+							Change username
+						</Link>
+					</div>
 				</div>
 			</div>
 		</div>
