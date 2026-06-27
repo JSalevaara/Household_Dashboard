@@ -59,7 +59,7 @@ jobs:
       - name: Run Pytest
         working-directory: ./backend
         env:
-          SECRET_KEY: 'dummy_key_for_testing'
+          SECRET_KEY: 'a_very_long_and_secure_dummy_key_for_testing_purposes_only'
           DB_USER: testuser
           DB_PASSWORD: testpassword
           DB_NAME: test_db

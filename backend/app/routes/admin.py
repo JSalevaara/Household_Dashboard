@@ -36,7 +36,6 @@ async def update_user_role(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    # BUG FIX: Just check the boolean on the specific user object
     if user.super:
         raise HTTPException(status_code=403, detail="Cannot change role of a super admin")
 

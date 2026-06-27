@@ -1,24 +1,32 @@
-from fastapi import HTTPException
-from sqlalchemy.orm import Session
+from fastapi import HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.household import Household, HouseholdMember
 from app.schemas.household import HouseholdCreate
 
 
-def create_household(db: Session, household_in: HouseholdCreate, user_id: int):
+async def create_household(db: AsyncSession, household_in: HouseholdCreate, user_id: int):
     if not household_in.name.strip():
-        raise HTTPException(status_code=422, detail="Household name cannot be empty.")
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Household name cannot be empty.",
+        )
+
     try:
-        new_household = Household(name=household_in.name)
+        new_household = Household(name=household_in.name.strip())
         db.add(new_household)
-        db.commit()
+        await db.flush()
 
         member = HouseholdMember(household_id=new_household.id, user_id=user_id, role="admin")
         db.add(member)
-        db.commit()
+        await db.commit()
+        await db.refresh(new_household)
+
         return new_household
+
     except Exception as e:
-        db.rollback()
+        await db.rollback()
         raise HTTPException(
-            status_code=500, detail="An error occurred while creating the household."
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while creating the household.",
         ) from e
