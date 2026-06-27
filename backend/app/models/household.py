@@ -36,5 +36,5 @@ class HouseholdMember(Base):
     role: Mapped[str] = mapped_column(String, default="member", nullable=False)
     joined_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
-    user: Mapped["User"] = relationship("app.models.user.User", back_populates="households")
+    user: Mapped["User"] = relationship("User", back_populates="households")
     household: Mapped["Household"] = relationship("Household", back_populates="members")
