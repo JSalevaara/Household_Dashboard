@@ -21,7 +21,7 @@ class User(UserBase):
     id: int
     household_id: Optional[int] = None
     role: str
-    super: bool
+    super: bool = False
 
     model_config = ConfigDict(from_attributes=True)
 
