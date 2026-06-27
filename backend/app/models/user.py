@@ -1,10 +1,13 @@
-from typing import List, TYPE_CHECKING
-from sqlalchemy import String, Boolean
+from typing import TYPE_CHECKING, List
+
+from sqlalchemy import Boolean, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from app.core.database import Base
 
 if TYPE_CHECKING:
     from app.models.household import HouseholdMember
+
 
 class User(Base):
     __tablename__ = "users"
@@ -17,7 +20,5 @@ class User(Base):
     super: Mapped[bool] = mapped_column(Boolean, default=False)
 
     households: Mapped[List["HouseholdMember"]] = relationship(
-        "HouseholdMember", 
-        back_populates="user", 
-        cascade="all, delete-orphan"
+        "HouseholdMember", back_populates="user", cascade="all, delete-orphan"
     )

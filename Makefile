@@ -60,3 +60,19 @@ test-frontend:
 		@echo "Running frontend tests..."
 
 test-all: test-backend test-frontend
+
+#Linting commands
+
+lint-backend:
+		@echo "Cleaning Python backend..."
+		cd backend && poetry run ruff format . && poetry run ruff check . --fix
+
+lint-frontend:
+		@echo "Cleaning React frontend..."
+		cd frontend && npx prettier --write . && npm run lint
+
+lint:
+		@set -e; \
+		$(MAKE) lint-backend; \
+		$(MAKE) lint-frontend
+		@echo "Linting completed successfully!"
