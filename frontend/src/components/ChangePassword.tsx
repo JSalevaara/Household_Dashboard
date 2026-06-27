@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import apiClient from '../api/client';
+import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
+import { userService } from '../api/userService';
 
 export const ChangePassword = () => {
 	const [formData, setFormData] = useState({
@@ -11,11 +12,6 @@ export const ChangePassword = () => {
 
 	const [showPassword, setShowPassword] = useState(false);
 	const [showNewPassword, setShowNewPassword] = useState(false);
-
-	const [message, setMessage] = useState<{
-		type: 'success' | 'error';
-		text: string;
-	} | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,54 +20,45 @@ export const ChangePassword = () => {
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		setMessage(null);
 
 		if (formData.newPassword.length < 6) {
-			setMessage({
-				type: 'error',
-				text: 'New password must be atleast 6 characters long',
-			});
+			toast.error('New password must be at least 6 characters long');
 			return;
 		}
 
 		if (formData.newPassword === formData.oldPassword) {
-			setMessage({
-				type: 'error',
-				text: 'New password cannot be the same as the old password!',
-			});
+			toast.error('New password cannot be the same as the old password!');
 			return;
 		}
 
 		if (formData.newPassword !== formData.confirmNewPassword) {
-			setMessage({ type: 'error', text: 'New passwords do not match!' });
+			toast.error('New password and confirm new password do not match');
 			return;
 		}
 
 		setIsLoading(true);
 
 		try {
-			const token = localStorage.getItem('token');
+			await userService.changePassword({
+				old_password: formData.oldPassword,
+				new_password: formData.newPassword,
+			});
 
-			await apiClient.put(
-				'/users/me/password',
-				{
-					old_password: formData.oldPassword,
-					new_password: formData.newPassword,
-					confirm_new_password: formData.confirmNewPassword,
-				},
-				{
-					headers: { Authorization: `Bearer ${token}` },
-				},
-			);
-
-			setMessage({ type: 'success', text: 'Password changed successfully!' });
+			toast.success('Password updated successfully!');
 			setFormData({ oldPassword: '', newPassword: '', confirmNewPassword: '' });
 		} catch (error: any) {
-			if (error.response && error.response.status === 400) {
-				setMessage({ type: 'error', text: 'Incorrect old password.' });
-			} else {
-				setMessage({ type: 'error', text: 'Failed to update password.' });
+			let errorMessage = 'Failed to update password.';
+
+			if (error.response?.data?.detail) {
+				const detail = error.response.data.detail;
+
+				if (typeof detail === 'string') {
+					errorMessage = detail;
+				} else if (Array.isArray(detail) && detail.length > 0) {
+					errorMessage = detail[0].msg;
+				}
 			}
+			toast.error(errorMessage);
 		} finally {
 			setIsLoading(false);
 		}
@@ -80,11 +67,11 @@ export const ChangePassword = () => {
 	return (
 		<div className="max-w-2xl mx-auto p-6">
 			<div className="flex justify-between items-center mb-8">
-				<h1 className="text-3xl font-bold">Settings</h1>
+				<h1 className="text-3xl font-bold text-gray-900">Settings</h1>
 				<Link
 					to="/settings"
-					className="bg-gray-100 hover:bg-gray-200 text-gray-800 border border-gray-200 font-semibold py-2 px-4 rounded-lg transition-colors">
-					&larr; Back to settings
+					className="bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors">
+					&larr; Back to Settings
 				</Link>
 			</div>
 
@@ -92,13 +79,6 @@ export const ChangePassword = () => {
 				<h2 className="text-xl font-semibold text-gray-800 mb-4">
 					Change Password
 				</h2>
-
-				{message && (
-					<div
-						className={`p-4 rounded-lg mb-6 text-sm font-medium ${message.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-						{message.text}
-					</div>
-				)}
 
 				<form onSubmit={handleSubmit} className="space-y-6 max-w-md">
 					<div className="relative">
@@ -176,12 +156,6 @@ export const ChangePassword = () => {
 						{isLoading ? 'Updating...' : 'Update Password'}
 					</button>
 				</form>
-
-				<div className="mt-6">
-					<Link to="/settings" className="text-blue-600 hover:underline">
-						Back to settings
-					</Link>
-				</div>
 			</div>
 		</div>
 	);

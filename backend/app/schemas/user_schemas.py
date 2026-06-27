@@ -32,7 +32,6 @@ class UserLogin(BaseModel):
 class UserChangePassword(BaseModel):
     old_password: str
     new_password: str
-    confirm_new_password: str
 
 class UserChangeUsername(BaseModel):
     password: str

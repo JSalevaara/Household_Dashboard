@@ -1,30 +1,32 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import apiClient from '../api/client';
 import { useAuth } from '../context/AuthContext';
 
-interface User {
-	id: number;
-	username: string;
-	email: string;
-	role: string;
-	super: boolean;
-}
+import { adminService, type AdminStats, type User } from '../api/adminService';
+import toast from 'react-hot-toast';
+import { Modal } from './Modal';
 
 export const AdminDashboard = () => {
 	const [users, setUsers] = useState<User[]>([]);
-	const [stats, setStats] = useState({ total_users: 0, total_households: 0 });
+	const [stats, setStats] = useState<AdminStats>();
 	const [loading, setLoading] = useState(true);
 	const { currentUser } = useAuth();
-
-	// State to track exact position of the dropdown
 	const [menuState, setMenuState] = useState<{
 		id: number;
 		top: number;
 		right: number;
 	} | null>(null);
 
-	// Global listener to close the dropdown if you click away or scroll
+	const [deleteModal, setDeleteModal] = useState<{
+		isOpen: boolean;
+		user: User | null;
+	}>({ isOpen: false, user: null });
+	const [passwordModal, setPasswordModal] = useState<{
+		isOpen: boolean;
+		user: User | null;
+	}>({ isOpen: false, user: null });
+	const [newPasswordInput, setNewPasswordInput] = useState('');
+
 	useEffect(() => {
 		const closeMenu = () => setMenuState(null);
 		window.addEventListener('click', closeMenu);
@@ -39,14 +41,11 @@ export const AdminDashboard = () => {
 	useEffect(() => {
 		const fetchAdminData = async () => {
 			try {
-				const [usersRes, statsRes] = await Promise.all([
-					apiClient.get('/admin/users'),
-					apiClient.get('/admin/stats'),
-				]);
-				setUsers(usersRes.data);
-				setStats(statsRes.data);
+				const { users, stats } = await adminService.getDashboardData();
+				setUsers(users);
+				setStats(stats);
 			} catch (err) {
-				console.error('Failed to fetch admin data', err);
+				toast.error('Failed to load dashboard data');
 			} finally {
 				setLoading(false);
 			}
@@ -54,7 +53,6 @@ export const AdminDashboard = () => {
 		fetchAdminData();
 	}, []);
 
-	// Function to calculate exact button position and open the menu
 	const toggleMenu = (e: React.MouseEvent, user: User) => {
 		e.stopPropagation();
 
@@ -67,57 +65,48 @@ export const AdminDashboard = () => {
 
 		setMenuState({
 			id: user.id,
-			top: rect.bottom + 8, // 8px below the button
-			right: window.innerWidth - rect.right, // Align with the right side
+			top: rect.bottom + 8,
+			right: window.innerWidth - rect.right,
 		});
 	};
 
 	const toggleRole = async (user: User) => {
 		const newRole = user.role === 'admin' ? 'user' : 'admin';
 		try {
-			await apiClient.patch(`/admin/users/${user.id}/role?new_role=${newRole}`);
+			await adminService.updateRole(user.id, newRole);
 			setUsers(
 				users.map((u) => (u.id === user.id ? { ...u, role: newRole } : u)),
 			);
+			toast.success(`${user.username} is now an ${newRole}`);
 		} catch (err) {
-			alert('Failed to update role');
+			toast.error('Failed to update role');
 		}
 	};
 
-	const resetPassword = async (userId: number, username: string) => {
-		const newPassword = window.prompt(`Enter a new password for ${username}:`);
-
-		if (!newPassword) return;
+	const handleResetPassword = async (e: React.FormEvent) => {
+		e.preventDefault();
+		if (!passwordModal.user || !newPasswordInput) return;
 
 		try {
-			await apiClient.patch(`/admin/users/${userId}/reset-password`, {
-				new_password: newPassword,
-			});
-			alert(`Password for ${username} has been successfully updated!`);
+			await adminService.resetPassword(passwordModal.user.id, newPasswordInput);
+			toast.success(`Password updated for ${passwordModal.user.username}`);
+			setPasswordModal({ isOpen: false, user: null });
+			setNewPasswordInput('');
 		} catch (err: any) {
-			console.error(err);
-			alert(
-				`Failed to reset password: ${err.response?.data?.detail || err.message}`,
-			);
+			toast.error(err.response?.data?.detail || 'Failed to reset password');
 		}
 	};
 
-	const deleteUser = async (userId: number, username: string) => {
-		const confirmDelete = window.confirm(
-			`Are you sure you want to delete the user ${username}? This action cannot be undone.`,
-		);
-
-		if (!confirmDelete) return;
+	const confirmDelete = async () => {
+		if (!deleteModal.user) return;
 
 		try {
-			await apiClient.delete(`/admin/users/${userId}/delete`);
-			setUsers(users.filter((u) => u.id !== userId));
-			alert(`User ${username} has been successfully deleted!`);
+			await adminService.deleteUser(deleteModal.user.id);
+			setUsers(users.filter((u) => u.id !== deleteModal.user?.id));
+			toast.success(`User deleted successfully`);
+			setDeleteModal({ isOpen: false, user: null });
 		} catch (err: any) {
-			console.error(err);
-			alert(
-				`Failed to delete user: ${err.response?.data?.detail || err.message}`,
-			);
+			toast.error(err.response?.data?.detail || 'Failed to delete user');
 		}
 	};
 
@@ -152,8 +141,8 @@ export const AdminDashboard = () => {
 				</div>
 			</div>
 
-			<div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-x-auto min-h-[400px]">
-				<table className="w-full text-left min-w-[800px]">
+			<div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-x-auto min-h-100">
+				<table className="w-full text-left min-w-200">
 					<thead className="bg-gray-50 border-b border-gray-100">
 						<tr>
 							<th className="px-6 py-4 font-semibold text-gray-600 whitespace-nowrap">
@@ -192,7 +181,6 @@ export const AdminDashboard = () => {
 										</span>
 									) : (
 										<div className="flex justify-end">
-											{/* The Trigger Button */}
 											<button
 												onClick={(e) => toggleMenu(e, user)}
 												className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors focus:outline-none"
@@ -204,8 +192,6 @@ export const AdminDashboard = () => {
 													<path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
 												</svg>
 											</button>
-
-											{/* The Fixed Breakout Menu */}
 											{menuState?.id === user.id && (
 												<div
 													className="fixed w-48 bg-white rounded-xl shadow-xl z-50 border border-gray-200 py-2 overflow-hidden flex flex-col items-start"
@@ -225,7 +211,7 @@ export const AdminDashboard = () => {
 
 													<button
 														onClick={() => {
-															resetPassword(user.id, user.username);
+															setPasswordModal({ isOpen: true, user });
 															setMenuState(null);
 														}}
 														className="w-full text-left px-4 py-2 text-sm font-semibold text-red-600 hover:bg-gray-50 transition-colors">
@@ -235,7 +221,7 @@ export const AdminDashboard = () => {
 													{user.id !== currentUser?.id && (
 														<button
 															onClick={() => {
-																deleteUser(user.id, user.username);
+																setDeleteModal({ isOpen: true, user });
 																setMenuState(null);
 															}}
 															className="w-full text-left px-4 py-2 text-sm font-semibold text-yellow-600 hover:bg-gray-50 transition-colors">
@@ -252,6 +238,63 @@ export const AdminDashboard = () => {
 					</tbody>
 				</table>
 			</div>
+			<Modal
+				isOpen={passwordModal.isOpen}
+				onClose={() => setPasswordModal({ isOpen: false, user: null })}
+				title={`Reset Password for ${passwordModal.user?.username}`}>
+				<form onSubmit={handleResetPassword} className="space-y-4">
+					<div>
+						<label className="block text-sm font-medium text-gray-700 mb-1">
+							New Password
+						</label>
+						<input
+							type="text"
+							value={newPasswordInput}
+							onChange={(e) => setNewPasswordInput(e.target.value)}
+							required
+							className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+							placeholder="Enter new password..."
+						/>
+					</div>
+					<div className="flex gap-3 pt-4">
+						<button
+							type="button"
+							onClick={() => setPasswordModal({ isOpen: false, user: null })}
+							className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg font-semibold transition-colors">
+							Cancel
+						</button>
+						<button
+							type="submit"
+							className="flex-1 px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg font-semibold transition-colors">
+							Save Password
+						</button>
+					</div>
+				</form>
+			</Modal>
+			<Modal
+				isOpen={deleteModal.isOpen}
+				onClose={() => setDeleteModal({ isOpen: false, user: null })}
+				title="Confirm Deletion">
+				<div className="space-y-4">
+					<p className="text-gray-600">
+						Are you sure you want to permanently delete{' '}
+						<strong>{deleteModal.user?.username}</strong>? This action cannot be
+						undone.
+					</p>
+					<div className="flex gap-3 pt-4">
+						<button
+							onClick={() => setDeleteModal({ isOpen: false, user: null })}
+							className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg font-semibold transition-colors">
+							Cancel
+						</button>
+						<button
+							onClick={confirmDelete}
+							className="flex-1 px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded-lg font-semibold transition-colors">
+							Delete User
+						</button>
+					</div>
+				</div>
+			</Modal>
 		</div>
 	);
 };

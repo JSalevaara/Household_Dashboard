@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom';
-import { NavBar } from './NavBar'; // Adjust path if needed
+import { NavBar } from './NavBar';
 
 export const Layout = () => {
 	return (

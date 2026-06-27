@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import apiClient from '../api/client';
 import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import { userService } from '../api/userService';
 
 export const ChangeUsername = () => {
 	const [formData, setFormData] = useState({
@@ -9,12 +10,6 @@ export const ChangeUsername = () => {
 	});
 
 	const [showPassword, setShowPassword] = useState(false);
-
-	const [message, setMessage] = useState<{
-		type: 'success' | 'error';
-		text: string;
-	} | null>(null);
-
 	const [isLoading, setIsLoading] = useState(false);
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -23,40 +18,35 @@ export const ChangeUsername = () => {
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		setMessage(null);
 
 		if (formData.newUsername.length < 3) {
-			setMessage({
-				type: 'error',
-				text: 'New username must be at least 3 characters long',
-			});
+			toast.error('New username must be at least 3 characters long');
 			return;
 		}
 
 		setIsLoading(true);
 
 		try {
-			const token = localStorage.getItem('token');
+			await userService.changeUsername({
+				password: formData.password,
+				new_username: formData.newUsername,
+			});
 
-			await apiClient.put(
-				'/users/me/username',
-				{
-					password: formData.password,
-					new_username: formData.newUsername,
-				},
-				{
-					headers: { Authorization: `Bearer ${token}` },
-				},
-			);
-
-			setMessage({ type: 'success', text: 'Username updated successfully!' });
+			toast.success('Username updated successfully!');
 			setFormData({ newUsername: '', password: '' });
 		} catch (error: any) {
-			if (error.response && error.response.status === 400) {
-				setMessage({ type: 'error', text: 'Incorrect password' });
-			} else {
-				setMessage({ type: 'error', text: 'Failed to update username' });
+			let errorMessage = 'Failed to update username.';
+
+			if (error.response?.data?.detail) {
+				const detail = error.response.data.detail;
+
+				if (typeof detail === 'string') {
+					errorMessage = detail;
+				} else if (Array.isArray(detail) && detail.length > 0) {
+					errorMessage = detail[0].msg;
+				}
 			}
+			toast.error(errorMessage);
 		} finally {
 			setIsLoading(false);
 		}
@@ -77,12 +67,6 @@ export const ChangeUsername = () => {
 				<h2 className="text-xl font-semibold text-gray-800 mb-4">
 					Change Username
 				</h2>
-				{message && (
-					<div
-						className={`p-4 rounded-lg mb-6 text-sm font-medium ${message.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-						{message.text}
-					</div>
-				)}
 
 				<form className="space-y-6 max-w-md" onSubmit={handleSubmit}>
 					<div className="relative">
