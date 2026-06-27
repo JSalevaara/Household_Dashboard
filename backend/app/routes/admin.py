@@ -1,5 +1,6 @@
 from typing import List
 
+from app.schemas.user import PasswordReset, UserOut
 from argon2 import PasswordHasher
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -8,7 +9,6 @@ from app.core.database import get_db
 from app.core.security import get_current_admin_user
 from app.crud import admin as crud_admin
 from app.models.user import User
-from app.schemas.user_schemas import PasswordReset, UserOut
 
 ph = PasswordHasher()
 
