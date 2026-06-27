@@ -8,6 +8,7 @@ on:
 
 jobs:
   load-env:
+    runs-on: ubuntu-latest
     steps:
       - name: Generate .env file
         run: |
