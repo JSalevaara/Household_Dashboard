@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from prometheus_fastapi_instrumentator import Instrumentator
 
-from app.routes import admin, auth, users
+from app.routes import admin, auth, households, users
 
 load_dotenv()
 
@@ -39,3 +39,4 @@ def health_check():
 app.include_router(users.router)
 app.include_router(auth.router)
 app.include_router(admin.router)
+app.include_router(households.router)
