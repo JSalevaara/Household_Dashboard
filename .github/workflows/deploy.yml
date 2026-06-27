@@ -82,6 +82,12 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Generate .env file
+        run: |
+          cat << 'EOF' > .env
+          ${{secrets.ENV_FILE_CONTENTS}}
+          EOF
+
       - name: Start and Update Containers
         run: make prod
 
