@@ -7,6 +7,14 @@ on:
     branches: ['main']
 
 jobs:
+  load-env:
+    steps:
+      - name: Generate .env file
+        run: |
+          cat << 'EOF' > .env
+          ${{secrets.ENV_FILE_CONTENTS}}
+          EOF
+
   test-frontend:
     runs-on: ubuntu-latest
     steps:
@@ -73,12 +81,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Generate .env file
-        run: |
-          cat << 'EOF' > .env
-          ${{secrets.ENV_FILE_CONTENTS}}
-          EOF
 
       - name: Set up Python
         uses: actions/setup-python@v5
