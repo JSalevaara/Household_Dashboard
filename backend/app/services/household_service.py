@@ -1,5 +1,8 @@
+from typing import List
+
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 
 from app.models.household import Household, HouseholdMember
 from app.schemas.household import HouseholdCreate
@@ -30,3 +33,10 @@ async def create_household(db: AsyncSession, household_in: HouseholdCreate, user
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An error occurred while creating the household.",
         ) from e
+
+
+async def get_user_households(db: AsyncSession, user_id: int) -> List[Household]:
+    query = select(Household).join(HouseholdMember).where(HouseholdMember.user_id == user_id)
+    result = await db.execute(query)
+
+    return list(result.scalars().all())

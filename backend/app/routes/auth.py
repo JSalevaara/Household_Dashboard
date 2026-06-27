@@ -1,5 +1,6 @@
 from argon2 import PasswordHasher
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
@@ -10,10 +11,28 @@ from app.core.utils import (
     decode_access_token,
 )
 from app.crud import user as crud_user
-from app.schemas import user_schemas as schemas
+from app.schemas import user as schemas
 
 ph = PasswordHasher()
 router = APIRouter()
+
+
+@router.post("/token", tags=["auth"], description="OAuth2 compatible token login for Swagger UI")
+async def swagger_login(
+    form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)
+):
+    user = await crud_user.get_user_by_username(db, username=form_data.username)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    try:
+        ph.verify(user.hashed_password, form_data.password)
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    access_token = create_access_token({"sub": str(user.username)})
+
+    return {"access_token": access_token, "token_type": "bearer"}
 
 
 @router.post("/login")

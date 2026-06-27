@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from app.models.user import User
-from app.schemas.user_schemas import UserCreate
+from app.schemas.user import UserCreate
 
 ph = PasswordHasher()
 

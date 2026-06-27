@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.core.security import get_current_user
 from app.crud import user as crud_user
-from app.schemas import user_schemas as schemas
+from app.schemas import user as schemas
 
 ph = PasswordHasher()
 router = APIRouter(prefix="/users")

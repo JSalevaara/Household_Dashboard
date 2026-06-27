@@ -17,7 +17,8 @@ dependencies = [
     "argon2-cffi (>=25.1.0,<26.0.0)",
     "pyjwt (>=2.13.0,<3.0.0)",
     "gunicorn (>=26.0.0,<27.0.0)",
-    "prometheus-fastapi-instrumentator (>=8.0.2,<9.0.0)"
+    "prometheus-fastapi-instrumentator (>=8.0.2,<9.0.0)",
+    "python-multipart (>=0.0.32,<0.0.33)"
 ]
 
 

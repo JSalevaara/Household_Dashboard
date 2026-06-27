@@ -8,7 +8,7 @@ from app.crud import user as crud_user
 from app.models.user import User
 
 # Allows access to the token from the Authorization header in the format
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
 
 
 async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)):
