@@ -1,8 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import func
-from app.models import User, Household
+from app.models.user import User
+from app.models.household import Household
 
 
 async def get_stats(db: AsyncSession):
