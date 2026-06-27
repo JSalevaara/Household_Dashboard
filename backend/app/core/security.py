@@ -5,7 +5,7 @@ from fastapi import Depends, HTTPException, status
 from app.crud import user as crud_user
 from app.core.utils import decode_access_token
 from app.core.database import get_db
-from app.models import User
+from app.models.user import User
 
 
 # Allows access to the token from the Authorization header in the format

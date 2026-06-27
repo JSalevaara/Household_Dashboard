@@ -7,6 +7,9 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
 
+from app.models.user import User
+from app.models.household import Household, HouseholdMember
+
 import os
 import sys
 from dotenv import load_dotenv

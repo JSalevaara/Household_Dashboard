@@ -6,7 +6,7 @@ from sqlalchemy import select, func
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.core.database import AsyncSessionLocal 
-from app.models import User
+from app.models.user import User
 from argon2 import PasswordHasher
 
 

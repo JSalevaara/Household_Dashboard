@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from app.models import User
+from app.models.user import User
 from app.schemas.user_schemas import UserCreate
 from argon2 import PasswordHasher
 
