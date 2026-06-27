@@ -8,7 +8,10 @@ import { Modal } from './Modal';
 
 export const AdminDashboard = () => {
 	const [users, setUsers] = useState<User[]>([]);
-	const [stats, setStats] = useState<AdminStats>();
+	const [stats, setStats] = useState<AdminStats>({
+		total_users: 0,
+		total_households: 0,
+	});
 	const [loading, setLoading] = useState(true);
 	const { currentUser } = useAuth();
 	const [menuState, setMenuState] = useState<{

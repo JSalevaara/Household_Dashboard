@@ -20,7 +20,7 @@ prod:
 		$(DC_PROD) up -d
 		@echo ""
 		@echo "📊 === Starting Monitoring Stack === 📊"
-		$(DC_PROD) up -d --no-deps prometheus cadvisor grafana
+		$(DC_PROD) up -d --no-deps prometheus cadvisor grafana node-exporter
 prod-down:
 		$(DC_PROD) --profile monitoring down
 prod-logs:
