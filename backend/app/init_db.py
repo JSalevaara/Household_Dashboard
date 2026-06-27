@@ -1,16 +1,19 @@
 import asyncio
 import os
+
+from argon2 import PasswordHasher
 from dotenv import load_dotenv
-load_dotenv()
-from sqlalchemy import select, func
+from sqlalchemy import func, select
 from sqlalchemy.exc import SQLAlchemyError
 
-from app.core.database import AsyncSessionLocal 
+from app.core.database import AsyncSessionLocal
 from app.models.user import User
-from argon2 import PasswordHasher
+
+load_dotenv()
 
 
 ph = PasswordHasher()
+
 
 async def create_initial_admin():
     print("Starting database initialization...")
@@ -27,25 +30,26 @@ async def create_initial_admin():
             print("Database is empty. Creating default super admin...")
             default_password = os.getenv("FIRST_SUPERUSER_PASSWORD", "admin123")
             hashed_pw = ph.hash(default_password)
-            
+
             super_admin = User(
                 username="admin",
                 email="admin@example.com",
                 role="admin",
                 super=True,
-                hashed_password=hashed_pw
+                hashed_password=hashed_pw,
             )
-            
+
             session.add(super_admin)
             await session.commit()
-            
+
             print("✅ Super admin created successfully!")
-            print(f"Username: admin")
+            print("Username: admin")
             print(f"Password: {default_password}")
 
         except SQLAlchemyError as e:
             await session.rollback()
             print(f"❌ Failed to initialize database: {e}")
+
 
 if __name__ == "__main__":
     asyncio.run(create_initial_admin())

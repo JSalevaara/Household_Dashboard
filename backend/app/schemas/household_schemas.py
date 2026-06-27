@@ -1,12 +1,16 @@
-from pydantic import BaseModel
 from datetime import datetime
+
+from pydantic import BaseModel
+
 
 # Household schemas
 class HouseholdBase(BaseModel):
     name: str
 
+
 class HouseholdCreate(HouseholdBase):
     pass
+
 
 class Household(HouseholdBase):
     id: int
