@@ -20,5 +20,5 @@ class User(Base):
     super: Mapped[bool] = mapped_column(Boolean, default=False)
 
     households: Mapped[List["HouseholdMember"]] = relationship(
-        "app.models.household.HouseholdMember", back_populates="user", cascade="all, delete-orphan"
+        "HouseholdMember", back_populates="user", cascade="all, delete-orphan"
     )
