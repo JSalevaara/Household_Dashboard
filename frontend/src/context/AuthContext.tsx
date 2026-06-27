@@ -7,13 +7,14 @@ interface User {
 	username: string;
 	email: string;
 	role: string;
+	super?: boolean;
 	household_id?: number | null;
 }
 
 interface AuthContextType {
 	currentUser: User | null;
 	isLoading: boolean;
-	logout: () => void;
+	logout: () => Promise<void>;
 	checkAuth: () => Promise<void>;
 }
 
@@ -47,10 +48,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		checkAuth();
 	}, []);
 
-	const logout = () => {
-		localStorage.removeItem('token');
-		setCurrentUser(null);
-		window.location.href = '/login';
+	const logout = async () => {
+		try {
+			await apiClient.post('/logout');
+		} catch (error) {
+			console.error('Logout request failed, but clearing local state anyway');
+		} finally {
+			localStorage.removeItem('token');
+			setCurrentUser(null);
+			window.location.href = '/login';
+		}
 	};
 
 	return (

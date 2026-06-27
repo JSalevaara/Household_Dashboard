@@ -17,6 +17,11 @@ jobs:
           node-version: '20'
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
+      - name: Generate .env file
+        run: |
+          cat << 'EOF' > .env
+          ${{secrets.ENV_FILE_CONTENTS}}
+          EOF
       - name: Install dependencies
         working-directory: ./frontend
         run: npm install
@@ -48,15 +53,13 @@ jobs:
           python-version: '3.12'
       - name: Install Poetry
         run: pip install poetry
-      - name: Generate Fresh Lockfile
-        working-directory: ./backend
-        run: poetry lock
       - name: Install dependencies
         working-directory: ./backend
         run: poetry install --with dev
       - name: Run Pytest
         working-directory: ./backend
         env:
+          SECRET_KEY: 'dummy_key_for_testing'
           DB_USER: testuser
           DB_PASSWORD: testpassword
           DB_NAME: test_db
@@ -74,16 +77,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
       - name: Generate .env file
         run: |
           cat << 'EOF' > .env
           ${{secrets.ENV_FILE_CONTENTS}}
           EOF
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
 
       - name: Start and Update Containers
         run: make prod

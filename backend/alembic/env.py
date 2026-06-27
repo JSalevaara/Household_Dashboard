@@ -14,7 +14,6 @@ from dotenv import load_dotenv
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from app.core.database import Base
-import app.models
 
 load_dotenv()
 

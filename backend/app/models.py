@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import List, Optional
-from sqlalchemy import String, Boolean, ForeignKey, DateTime, Column # Added Column here
+from sqlalchemy import String, Boolean, ForeignKey, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 from app.core.database import Base
@@ -9,10 +9,10 @@ class Household(Base):
     __tablename__ = "households"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    name: Mapped[str] = mapped_column(String(100)) # Changed int to str
+    name: Mapped[str] = mapped_column(String(100))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
-    users: Mapped[List["User"]] = relationship(back_populates="household", cascade="all, delete-orphan")
+    users: Mapped[List["User"]] = relationship(back_populates="household")
     shopping_items: Mapped[List["ShoppingItem"]] = relationship(back_populates="household", cascade="all, delete-orphan")
 
 class User(Base):

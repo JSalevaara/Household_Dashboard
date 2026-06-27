@@ -64,7 +64,7 @@ export const NavBar = () => {
 				{isMenuOpen && (
 					<div className="absolute top-full right-0 p-4 w-48 z-50">
 						<div className="bg-white border border-gray-100 rounded-xl shadow-lg py-2 overflow-hidden">
-							{currentUser?.role === 'admin' && (
+							{(currentUser?.role === 'admin' || currentUser?.super) && (
 								<Link
 									to="/admin"
 									onClick={() => setIsMenuOpen(false)}

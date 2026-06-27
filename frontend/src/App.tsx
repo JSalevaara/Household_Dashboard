@@ -6,7 +6,7 @@ import {
 } from 'react-router-dom';
 import { Login } from './components/Login';
 import { Register } from './components/Register';
-import { Dashboard } from './Dashboard';
+import { Dashboard } from './components/Dashboard';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { Settings } from './components/Settings';
 import { ChangePassword } from './components/ChangePassword';
