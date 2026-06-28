@@ -19,8 +19,9 @@ app = FastAPI(
 Instrumentator().instrument(app).expose(app)
 
 allow_origins = ["http://localhost:5173", "http://127.0.0.1:5173"]
-if os.getenv("ALLOWED_ORIGIN"):
-    allow_origins.append(os.getenv("ALLOWED_ORIGIN"))
+new_origin = os.getenv("ALLOWED_ORIGIN")
+if new_origin:
+    allow_origins.append(new_origin)
 
 app.add_middleware(
     CORSMiddleware,
