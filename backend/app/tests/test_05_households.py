@@ -51,11 +51,11 @@ async def test_get_user_households_empty(client):
 
 
 async def test_get_user_households_security(client):
-    user_payload_a = {"username": "userA", "email": "a@a.com", "password": "p"}
+    user_payload_a = {"username": "userA", "email": "a@a.com", "password": "passwordA"}
     headers_a = await login_user(client, user_payload_a)
     await client.post("/households/", json={"name": "A's House"}, headers=headers_a)
 
-    user_payload_b = {"username": "userB", "email": "b@b.com", "password": "p"}
+    user_payload_b = {"username": "userB", "email": "b@b.com", "password": "passwordB"}
     headers_b = await login_user(client, user_payload_b)
 
     response = await client.get("/households/", headers=headers_b)
