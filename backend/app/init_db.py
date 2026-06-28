@@ -23,7 +23,7 @@ async def create_initial_admin():
             result = await session.execute(select(func.count(User.id)))
             user_count = result.scalar()
 
-            if user_count > 0:
+            if user_count:
                 print("Users already exist in the database. Skipping super admin creation.")
                 return
 

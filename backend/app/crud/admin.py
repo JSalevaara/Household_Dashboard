@@ -53,5 +53,5 @@ async def delete_user(db: AsyncSession, user: User):
     try:
         await db.commit()
     except SQLAlchemyError:
-        await db.rollback
-        raise Exception("An unexpected database error occured while deleting user.")
+        await db.rollback()
+        raise Exception("An unexpected database error occurred while deleting user.")
